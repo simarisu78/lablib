@@ -3,10 +3,10 @@
 # lablib
 This is a tool for book management.
 
-# useage
+## useage
 
-# dependencies
+## dependencies
 
-# LICENSE
+## LICENSE
 European Union Public License 1.1
 
