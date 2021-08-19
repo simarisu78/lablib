@@ -21,6 +21,7 @@ class TestBarcodeReader:
         br.start()
         yield br
 
+    @pytest.mark.device_connected
     def test_reader(self):
         with open(self._path, "wb") as f:
             cmd = [
