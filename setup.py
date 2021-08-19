@@ -34,4 +34,5 @@ packages=find_packages("src"),
     setup_requires=["pytest-runner"],
     tests_require=["pytest", "pytest-cov"],
     cmdclass={'envtest':VirtualEnvTest},
+    install_requires=_requires_from_file('requirements.txt'),
 )
