@@ -23,8 +23,38 @@ def rent(studentID):
 def return_book(barcode):
     pass
 
+def login():
+    import hashlib
+    
+    # THIS IS A PASSWORD FOR TESTING #
+    password_hash = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+    
+    message = "書籍の登録にはパスワードが必要です"
+    layout = [
+        [sg.Text(message)],
+        [sg.Text("Password"), sg.Input("", password_char='*', key="-password-")],
+        [sg.Button("Login", key="-login_button-", enable_events=True)],
+    ]
+    login_window = sg.Window("Login Window", layout, return_keyboard_events=True, element_justification='center', finalize=True)
+
+    while True:
+        event, values = login_window.read()
+        
+        if event in [sg.WIN_CLOSED, '-exit-', 'Escape:27']:
+            break
+        
+        elif event in ["-login_button-", '\r']:
+            input = values["-password-"]
+            if hashlib.sha256(input.encode()).hexdigest() == password_hash:
+                sg.popup_no_buttons("Welcome")
+                break
+            else:
+                sg.popup_no_buttons("Login failed")
+    login_window.close()
+
 def register():
     pass
+        
 
 def main():
     greet = "書籍管理システムへようこそ！"
@@ -64,6 +94,8 @@ def main():
 
         if event == "-EXIT-":
             break
+        elif event == "-REGISTER-":
+            login()
 
         print(event)
         
