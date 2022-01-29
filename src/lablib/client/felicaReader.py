@@ -39,7 +39,7 @@ class FelicaReader(threading.Thread):
         return True
 
     def released(self, tag):
-        self._queue.put(("nfc-release"))
+        self._queue.put(("nfc-release",))
         return True
 
     def run(self):
@@ -47,12 +47,3 @@ class FelicaReader(threading.Thread):
         while True:
             clf.connect(rdwr={'on-connect':self.connected,
                               'on-release':self.released})
-
-            
-if __name__ == "__main__":
-    import logging
-    logging.basicConfig(level=logging.DEBUG)
-    q = queue.Queue()
-    fr = FelicaReader(q)
-    fr.start()
-    logging.info(q.get())
