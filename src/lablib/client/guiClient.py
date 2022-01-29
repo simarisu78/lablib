@@ -32,24 +32,32 @@ def login():
     message = "書籍の登録にはパスワードが必要です"
     layout = [
         [sg.Text(message)],
+        [sg.Text("", key="-notice-", text_color="Red")],
         [sg.Text("Password"), sg.Input("", password_char='*', key="-password-")],
-        [sg.Button("Login", key="-login_button-", enable_events=True)],
+        [sg.Button("Login", key="-login_button-"), sg.Button("Cancel", key="-cancel_button-")],
     ]
-    login_window = sg.Window("Login Window", layout, return_keyboard_events=True, element_justification='center', finalize=True)
-
+    login_window = sg.Window("Login Window",
+                             layout,
+                             return_keyboard_events=True,
+                             element_justification='center',
+                             keep_on_top=True,
+                             size=(x,y)).Finalize()
+    login_window.Maximize()
+    
     while True:
         event, values = login_window.read()
         
-        if event in [sg.WIN_CLOSED, '-exit-', 'Escape:27']:
+        if event in [sg.WIN_CLOSED, '-exit-', 'Escape:27', "-cancel_button-"]:
             break
         
         elif event in ["-login_button-", '\r']:
             input = values["-password-"]
             if hashlib.sha256(input.encode()).hexdigest() == password_hash:
-                sg.popup_no_buttons("Welcome")
+                login_window["-notice-"].update("Welcome")
                 break
             else:
-                sg.popup_no_buttons("Login failed")
+                login_window["-notice-"].update("Login Failed")
+                
     login_window.close()
 
 def register():
