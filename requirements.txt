@@ -4,3 +4,6 @@ ndeflib==0.3.3
 nfcpy==1.0.3
 pyDes==2.0.1
 pyserial==3.5
+pysimplegui==4.56.0
+flask==2.0.1
+flask-sqlalchemy==2.5.1
