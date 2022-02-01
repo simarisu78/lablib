@@ -2,10 +2,11 @@ from flask import Flask, url_for, render_template, send_from_directory
 from markupsafe import escape
 import os
 
-from app.api import api
-
+from lablib.app.api import api
 
 app = Flask(__name__, static_folder="static")
+app.config.from_object('lablib.app.config.Config')
+init_db(app)
 
 # register api blueprint
 app.register_blueprint(api)
@@ -29,4 +30,3 @@ def profile(username):
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static/media'),
                                'favicon.ico', )
-

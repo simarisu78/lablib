@@ -1,4 +1,4 @@
-from app.app import app
+from lablib.app.app import app
 import sys
 
 if __name__ == "__main__":

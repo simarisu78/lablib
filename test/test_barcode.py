@@ -2,7 +2,7 @@ import pytest
 import subprocess
 from queue import Queue
 
-from lablib.client.barcode import BarcodeReader
+from lablib.client import BarcodeReader
 
 from logging import getLogger
 
