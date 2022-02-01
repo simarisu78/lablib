@@ -30,9 +30,9 @@ def _requires_from_file(filename):
 
 
 setup(
-    packages=find_packages("src"),
-    package_dir={"": "src"},
-    py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
+    packages=find_packages("lablib"),
+    package_dir={"": "lablib"},
+    py_modules=[splitext(basename(path))[0] for path in glob("lablib/*.py")],
     include_package_data=True,
     zip_safe=False,
     setup_requires=["pytest-runner"],
