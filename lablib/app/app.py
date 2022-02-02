@@ -3,6 +3,8 @@ from markupsafe import escape
 import os
 
 from lablib.app.api import api
+from lablib.app.models.books import Book
+from lablib.app.db import init_db
 
 app = Flask(__name__, static_folder="static")
 app.config.from_object('lablib.app.config.Config')
