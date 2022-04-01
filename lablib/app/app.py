@@ -6,9 +6,15 @@ from lablib.app.api import api
 from lablib.app.models.books import Book
 from lablib.app.db import init_db
 
+from flask_jwt_extended import JWTManager, jwt_required
+
 app = Flask(__name__, static_folder="static")
 app.config.from_object('lablib.app.config.Config')
 init_db(app)
+
+# enable JWT
+jwt = JWTManager()
+jwt.init_app(app)
 
 # register api blueprint
 app.register_blueprint(api)
@@ -16,7 +22,6 @@ app.register_blueprint(api)
 @app.route('/')
 def index():
     return render_template('layout.html')
-
 
 @app.route('/login')
 def login():
@@ -30,5 +35,4 @@ def profile(username):
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static/media'),
-                               'favicon.ico', )
+    return send_from_directory(os.path.join(app.root_path, 'static/media', 'favicon.ico', ))
