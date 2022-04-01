@@ -1,4 +1,4 @@
-from .books import Book
+from .books import Book, BookSchema
 from .checkout import Checkout
 
-__all__ = [Book, Checkout]
+__all__ = [Book, BookSchema, Checkout]
