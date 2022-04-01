@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identi
 
 api = Blueprint('api', __name__, url_prefix='/api/v1')
 from lablib.app.auth import ldap_auth
+from .models import Book, BookSchema, Checkout
 
 # generate token
 @api.route('/auth', methods=['POST'])
@@ -23,7 +24,11 @@ def auth():
 # get book list
 @api.route('/books', methods=['GET'])
 def book_list():
-	return "book list"
+	books = Book.query.all()
+	if books is not None:
+		return jsonify({"status": "ok", "Books" : BookSchema(many=True).dump(books)})
+	else:
+		return jsonify({"status": "ng"})
 
 # register books
 @api.route('/books', methods=['POST'])
