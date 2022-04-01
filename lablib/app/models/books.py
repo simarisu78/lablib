@@ -17,6 +17,8 @@ class Book(db.Model):
 	# 蔵書数
 	amount = db.Column(db.Integer, nullable=False)
 	stock = db.Column(db.Integer, nullable=False)
+	# sumbnail url
+	large_url = db.Column(db.Text())
 	# relationship
 	checkout = db.relationship("Checkout", backref=db.backref("book", uselist=False))
 
