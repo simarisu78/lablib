@@ -2,13 +2,15 @@ from mmap import ACCESS_COPY
 from os import access
 import re
 from xml.dom import NotFoundErr
-from flask import Blueprint, request, abort, jsonify, current_app
+from flask import Blueprint, make_response, request, abort, jsonify, current_app
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 
 api = Blueprint('api', __name__, url_prefix='/api/v1')
 from lablib.app.auth import ldap_auth
 from .models import Book, BookSchema, Checkout
 from .db import db
+
+from lablib.app import jwt, limiter
 
 # generate token
 @api.route('/auth', methods=['POST'])
@@ -36,6 +38,7 @@ def book_list():
 # register books
 @api.route('/books', methods=['POST'])
 @jwt_required()
+@limiter.limit("1/second")
 def register_books():
 	if request is None:
 		return jsonify({"status": "ng", "msg": "Please post data"})
@@ -224,3 +227,7 @@ def return_books():
 @api.errorhandler(404)
 def error_handler(error):
 	return "error"
+
+@api.errorhandler(429)
+def ratelimit_handler(e):
+	return make_response(jsonify(error="ratelimit exceeded: %s" % e.description), 429)
