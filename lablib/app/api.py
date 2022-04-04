@@ -165,17 +165,22 @@ def search_external_api(books):
 	
 				if res.json()[0] is None:
 					raise NotFoundErr
-				result = res.json()[0].get("onix")
+				result = res.json()[0]
 
-				newbook.title = result.get("DescriptiveDetail").get("TitleDetail").get("TitleElement").get		("TitleText").get("content")
-				newbook.author = result.get("DescriptiveDetail").get("Contributor")[0].get("PersonName").get("content").translate(TRANSLATE_LIST)
-				newbook.detail = result.get("CollateralDetail", {}).get("TextContent", {})[0].get("Text", None)
+				newbook.title = result.get("summary").get("title")
+				newbook.author = result.get("summary").get("author")
+				newbook.detail = result.get("onix").get("CollateralDetail", {}).get("TextContent", {})[0].get("Text", None)
 
-				pubdate = result.get("PublishingDetail").get("PublishingDate")[0].get("Date")
-				newbook.publishmonth = "-".join([pubdate[:4], pubdate[4:6]])
-				newbook.publisher = result.get("PublishingDetail", {}).get("Publisher", {}).get("PublisherName", None)
+				pubdate = result.get("summary").get("pubdate")
+				if '-' in pubdate:
+					reg = re.search("(\d+)-(\d+)", pubdate).groups()
+					newbook.publishmonth = "{}-{:0>2}".format(reg[0], reg[1])
+				else:
+					newbook.publishmonth = "-".join([pubdate[:4], pubdate[4:6]])
+					
+				newbook.publisher = result.get("summary").get("publisher")
 				newbook.amount = newbook.stock = 1
-				newbook.large_url = result.get("CollateralDetail", {}).get("SupportingResource", {})[0].get("ResourceVersion", {})[0].get("ResourceLink", None)
+				newbook.large_url = result.get("summary").get("cover")
     
 			db.session.add(newbook)
 			db.session.commit()
@@ -186,11 +191,12 @@ def search_external_api(books):
 		except ConnectionRefusedError:
 			return jsonify({"status":"ng", "msg":"Connection to API was Refused. Please check token."})
 
-		except KeyError:
-			notFoundList.append({"barcode":barcode,"msg":"Required information was not available. Please register manually."})
+		#except KeyError:
+			#notFoundList.append({"barcode":barcode,"msg":"Required information was not available. Please register manually."})
 		
-		except Exception:
-			notFoundList.append({"barcode":barcode,"msg":"some error occured."})
+		#except Exception as e:
+			#print(e)
+			#notFoundList.append({"barcode":barcode,"msg":"some error occured."})
 
 		finally:
 			db.session.rollback()
