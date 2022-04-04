@@ -10,6 +10,6 @@ class Checkout(db.Model):
 
 	checkout_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
 	book_id = db.Column(db.Integer(), db.ForeignKey('books.book_id'))
-	user_id = db.Column(db.String(), nullable=False)
+	user_id = db.Column(db.String(8), nullable=False)
 	checkoutDate = db.Column(db.DateTime, default=datetime.datetime.now)
 	isReturn = db.Column(db.Boolean, default=False)
