@@ -56,7 +56,7 @@ def register_books():
 			for book_req in books:
 				barcode = book_req.get('barcode')
     
-				if Book.query.filter_by(barcode=barcode) is not None:
+				if len(Book.query.filter_by(barcode=barcode).all()) != 0:
 					ngList.append({"barcode":barcode, "msg":"this book is already registered"})
 					continue
     
@@ -113,7 +113,7 @@ def search_external_api(books):
 				notFoundList.append({"msg":"Please pass barcodes"})
 				continue
 			
-			if Book.query.filter_by(barcode=barcode) is not None:
+			if len(Book.query.filter_by(barcode=barcode).all()) != 0:
 				notFoundList.append({"barcode":barcode, "msg":"this book is already registered"})
 				continue
    
