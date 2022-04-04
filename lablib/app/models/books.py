@@ -25,5 +25,4 @@ class Book(db.Model):
 ma = Marshmallow()
 class BookSchema(ma.Schema):
 	class Meta:
-		fields = ("barcode", "title", "author", "detail"
-            "publishmonth", "publisher", "amount", "stock")
+		fields = ("barcode", "title", "author", "detail", "publishmonth", "publisher", "amount", "stock")
