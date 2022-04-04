@@ -4,7 +4,7 @@ import os
 
 from lablib.app.api import api
 from lablib.app.models.books import Book
-from lablib.app.db import init_db
+from lablib.app.db import init_db, db
 
 from flask_jwt_extended import JWTManager, jwt_required
 
@@ -35,4 +35,4 @@ def profile(username):
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static/media', 'favicon.ico', ))
+    return send_from_directory('static/media', 'favicon.ico')
