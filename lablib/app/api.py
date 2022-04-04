@@ -1,7 +1,8 @@
 from mmap import ACCESS_COPY
 from os import access
 import re
-from flask import Blueprint, request, abort, jsonify
+from xml.dom import NotFoundErr
+from flask import Blueprint, request, abort, jsonify, current_app
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 
 api = Blueprint('api', __name__, url_prefix='/api/v1')
@@ -79,7 +80,56 @@ def register_books():
 
 		return jsonify({"status": "ok"})
 	else:
-		return jsonify({"msg":"auto mode"})
+		return search_external_api(books)
+
+# search for external apis
+# default api is OpenBD
+import requests
+import time
+def search_external_api(books):
+	notFoundList = []
+	for books_req in books:
+		try:
+			barcode = books_req.get("barcode")
+			data = {"applicationId": current_app.config['RAKUTEN_APPLICATION_ID'],
+				"format":"json",
+				"isbnjan": str(barcode)}
+			req = requests.get("https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404", data)
+
+			if req.status_code != 200:
+				raise ConnectionRefusedError
+   
+			if req.json()['hits'] == 0:
+				raise NotFoundErr
+			result = req.json()['Items'][0]['Item']
+
+			publishmonth = '-'.join(re.search("(\d+)年(\d+)月", result['salesDate']).groups())
+			newbook = Book(barcode=barcode, title=result['title'], 
+				author=result['author'], publishmonth=publishmonth,
+				publisher=result['publisherName'], amount=1, stock=1,
+				large_url=result['largeImageUrl'])
+   
+			db.session.add(newbook)
+			db.session.commit()
+   
+		except NotFoundErr:
+			notFoundList.append({"barcode":barcode,"msg":"barcode not found."})
+   
+		except ConnectionRefusedError:
+			return jsonify({"status":"ng", "msg":"Connection to API was Refused. Please check token."})
+
+		except:
+			notFoundList.append({"barcode":barcode,"msg":"some error occured."})
+		finally:
+			db.session.rollback()
+			db.session.close()
+  
+		time.sleep(1)
+	
+	if len(notFoundList) == 0:
+		return jsonify({"status":"ok"})
+	else:
+		return jsonify({"status":"partial ng", "nglist":notFoundList})
 
 # borrow books
 @api.route('/checkout', methods=['POST'])
