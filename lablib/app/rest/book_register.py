@@ -144,12 +144,12 @@ def search_external_api(books):
 		except ConnectionRefusedError:
 			return jsonify({"status":"ng", "msg":"Connection to API was Refused. Please check token."})
 
-		#except KeyError:
-			#notFoundList.append({"barcode":barcode,"msg":"Required information was not available. Please register manually."})
+		except KeyError:
+			notFoundList.append({"barcode":barcode,"msg":"Required information was not available. Please register manually."})
 		
-		#except Exception as e:
-			#print(e)
-			#notFoundList.append({"barcode":barcode,"msg":"some error occured."})
+		except Exception as e:
+			print(e)
+			notFoundList.append({"barcode":barcode,"msg":"some error occured."})
 
 		finally:
 			db.session.rollback()
