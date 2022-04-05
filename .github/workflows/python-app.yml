@@ -36,7 +36,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
         ports:
-          - 3306
+          - 3306:3306
           
       samba:
         image: laslabs/alpine-samba-dc:0.1.0
@@ -50,8 +50,8 @@ jobs:
     steps:
     - name: Verify that it is possible to login to mysql with user
       run: |
-        apt install mysql-client-core-8.0
-        mysqladmin ping -h localhost -u $DB_USERNAME -p $DB_PASSWORD
+        sudo apt install mysql-client-core-8.0
+        mysqladmin ping -h 127.0.0.1 -u$DB_USERNAME -p$DB_PASSWORD
     
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
