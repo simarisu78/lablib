@@ -9,21 +9,48 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  DB_USERNAME: user
+  DB_PASSWORD: password
+  DB_FQDN: localhost
+  DB_DATABASE_NAME: test
+  BASE_DOMAIN: cn=Users,dc=dc,dc=localdomain
+  LDAP_SERVER: localhost
+  RAKUTEN_APPLICATION_ID: ${{secrets.RAKUTEN_APP_ID}}
+  # this passwd is only for github actions
+  # DO NOT USE PRODUCTION ENVIRONMENT
+  LDAP_ADMIN_PASSWD: eit(u5wai5ahgho8iV}oo)S2la"o9Eis
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.7
+
+    - name: Create Containers
+      working-directory: ./.github/workflows/
+      run: |
+        pwd
+        ls -al
+        docker-compose up -d
+
+    - name: Wait until the service starts
+      working-directory: ./.github/workflows/
+      run: |
+        docker-compose run wait db:3309 -- echo "Database is up"
+        docker-compose run wait samba:389 -- echo "LDAP server is up"
+
+    - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.8
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
     - name: Test with pytest
       run: |
         python3 setup.py envtest
