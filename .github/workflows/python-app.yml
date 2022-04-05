@@ -27,9 +27,9 @@ jobs:
         image: mysql
         env:
           MYSQL_RANDOM_ROOT_PASSWORD: True
-          MYSQL_DATABASE: ${DB_DATABASE_NAME}
-          MYSQL_USER: ${DB_USERNAME}
-          MYSQL_PASSWORD: ${DB_PASSWORD}
+          MYSQL_DATABASE: $DB_DATABASE_NAME
+          MYSQL_USER: $DB_USERNAME
+          MYSQL_PASSWORD: $DB_PASSWORD
         options: >-
           --health-cmd "mysqladmin ping"
           --health-interval 10s
@@ -48,6 +48,11 @@ jobs:
           SAMBA_DC_DNS_BACKEND: SAMBA_INTERNAL
 
     steps:
+    - name: Verify that it is possible to login to mysql with user
+      run: |
+        apt install mysql-client-core-8.0
+        mysqladmin ping -h localhost -u $DB_USERNAME -p $DB_PASSWORD
+    
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
