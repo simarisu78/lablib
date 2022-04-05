@@ -12,7 +12,7 @@ on:
 env:
   DB_USERNAME: user
   DB_PASSWORD: password
-  DB_FQDN: localhost
+  DB_FQDN: 127.0.0.1
   DB_DATABASE_NAME: test
   BASE_DOMAIN: cn=Users,dc=dc,dc=localdomain
   LDAP_SERVER: localhost
