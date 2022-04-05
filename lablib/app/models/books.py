@@ -1,6 +1,6 @@
 from email.policy import default
 from flask_sqlalchemy import SQLAlchemy
-from lablib.app.db import db
+from lablib.app.util.db import db
 from flask_marshmallow import Marshmallow
 
 class Book(db.Model):

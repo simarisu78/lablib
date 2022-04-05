@@ -1,9 +1,9 @@
 #from flask import current_app
 from ldap3 import Connection
-from .config import Config
+from lablib.app import app
 
-BASE_DOMAIN = Config.BASE_DOMAIN
-LDAP_SERVER = Config.LDAP_SERVER
+BASE_DOMAIN = app.config.get("BASE_DOMAIN")
+LDAP_SERVER = app.config.get("LDAP_SERVER")
 
 def ldap_auth(username, password):
 	domain = ','.join(['cn={}'.format(username), BASE_DOMAIN])

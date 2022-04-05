@@ -6,9 +6,9 @@ from flask import Blueprint, make_response, request, abort, jsonify, current_app
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 
 api = Blueprint('api', __name__, url_prefix='/api/v1')
-from lablib.app.auth import ldap_auth
-from ..models import Book, BookSchema, Checkout
-from ..db import db
+from lablib.app.util.auth import ldap_auth
+from lablib.app.models import Book, BookSchema, Checkout
+from lablib.app.util.db import db
 
 from lablib.app import jwt, limiter
 

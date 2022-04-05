@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from lablib.app.db import db
+from lablib.app.util.db import db
 import datetime
 
 class Checkout(db.Model):
