@@ -12,7 +12,7 @@ on:
 env:
   DB_USERNAME: user
   DB_PASSWORD: password
-  DB_FQDN: localhost
+  DB_FQDN: 127.0.0.1
   DB_DATABASE_NAME: test
   DB_BASE_DOMAIN: cn=Users,dc=dc,dc=localdomain
   DB_LDAP_SERVER: localhost
@@ -46,13 +46,33 @@ jobs:
           # this is test password. DO NOT USE PRODUCTION ENV
           SAMBA_DC_ADMIN_PASSWORD: Chiemeex7c
           SAMBA_DC_DNS_BACKEND: SAMBA_INTERNAL
+        ports:
+          - 53:53
+          - 53:53/udp
+          - 88:88
+          - 88:88/udp
+          - 135:135
+          - 137-138:137-138/udp
+          - 139:139
+          - 389:389
+          - 389:389/udp
+          - 445:445
+          - 464:464
+          - 464:464/udp
+          - 636:636
+          - 1024-1044:1024-1044
+          - 3268-3269:3268-3269
 
     steps:
     - name: Verify that it is possible to login to mysql with user
       run: |
         sudo apt install mysql-client-core-8.0
         mysqladmin ping -h 127.0.0.1 -u$DB_USERNAME -p$DB_PASSWORD
-    
+    - name: Test LDAP server
+      run: |
+        docker exec
+        sudo apt -y install ldap-utils
+        ldapsearch -x -h $LDAP_SERVER -D "cn=$"
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
