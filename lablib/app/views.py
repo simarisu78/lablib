@@ -11,7 +11,6 @@ def index():
 def login():
     return 'login'
 
-
 @app.route('/users/<username>')
 def profile(username):
     return '{}\'s profile'.format(escape(username))
