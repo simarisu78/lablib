@@ -2,6 +2,8 @@ version: '3'
 services:
   db:
     image: mysql
+    volumes:
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: 1
       MYSQL_DATABASE: ${DB_DATABASE_NAME:?err}
@@ -16,6 +18,7 @@ services:
       - SYS_ADMIN
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ./smb_conf:/etc/samba
     environment:
       SAMBA_DC_REALM: dc.localdomain
       SAMBA_DC_DOMAIN: DC
