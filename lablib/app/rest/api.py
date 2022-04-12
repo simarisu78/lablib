@@ -1,3 +1,4 @@
+from functools import wraps
 from flask import Blueprint, make_response, request, abort, jsonify, current_app
 from flask_jwt_extended import jwt_required, create_access_token
 
@@ -7,15 +8,24 @@ from lablib.app.models import Book, BookSchema, Checkout
 from lablib.app import limiter
 from .book_register import self_register, search_external_api
 
+# content_type checker
+def content_type(value):
+	def _content_type(func):
+		@wraps(func)
+		def wrapper(*args, **kwargs):
+			if not request.headers.get("Content-Type") == value:
+				return make_response(
+					jsonify({"msg":
+					"Content-Type is invalid. Please set application/json"})
+				)
+			return func(*args, **kwargs)
+		return wrapper
+	return _content_type
+
 # generate token
 @api.route('/auth', methods=['POST'])
+@content_type("application/json")
 def auth():
-	if request is None:
-		return jsonify({"msg": "Authentication was failed"})
-
-	if request.json is None:
-		return jsonify({"msg":"please post json data (set Content-Type: application/json)"})
-
 	username = request.json.get("username", None)
 	password = request.json.get("password", None)
 	if ldap_auth(username, password) is False:
@@ -35,14 +45,9 @@ def book_list():
 
 # register books
 @api.route('/books', methods=['POST'])
+@content_type("application/json")
 @jwt_required()
 def register_books():
-	if request is None:
-		return jsonify({"status": "ng", "msg": "Please post data"})
-
-	if request.headers.get('Content-Type') != 'application/json':
-		return jsonify({"status": "ng", "msg": "Content-Type is invalid. Please set application/json"})
-	
 	try:
 		data = request.get_json()
 		selfRegister = data.get('self')
@@ -57,11 +62,13 @@ def register_books():
 
 # borrow books
 @api.route('/checkout', methods=['POST'])
+@content_type("application/json")
 def borrow_books():
 	return "check out books"
 
 # return books
 @api.route('/checkout', methods=['DELETE'])
+@content_type("application/json")
 def return_books():
 	return "return books"
 

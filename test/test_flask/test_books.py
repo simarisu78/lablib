@@ -1,4 +1,3 @@
-from calendar import c
 import json
 import pytest
 import os
@@ -80,7 +79,7 @@ class Testbooks:
 		assert res.json.get("msg") == "Authentication was failed"
 
 		res = client.post("/api/v1/auth", data=json.dumps({"username":"hoge", "password":"huga"}))
-		assert res.json.get("msg") == "please post json data (set Content-Type: application/json)"
+		assert res.json.get("msg") == "Content-Type is invalid. Please set application/json"
 
 		# invalid data format
 		res = client.post("/api/v1/books", headers={"Authorization":"Bearer {}".format(JWT), "content-type":"application/json"})
@@ -88,4 +87,4 @@ class Testbooks:
 
 		# invalid header
 		res = client.post("/api/v1/books", headers={"Authorization":"Bearer {}".format(JWT)}, data=json.dumps({"books":[{"barcode":BARCODES[1]}]}))
-		res.json.get("msg") == "Content-Type is invalid. Please set application/json"
+		assert res.json.get("msg") == "Content-Type is invalid. Please set application/json"
