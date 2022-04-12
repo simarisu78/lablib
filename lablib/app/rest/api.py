@@ -13,6 +13,9 @@ def auth():
 	if request is None:
 		return jsonify({"msg": "Authentication was failed"})
 
+	if request.json is None:
+		return jsonify({"msg":"please post json data (set Content-Type: application/json)"})
+
 	username = request.json.get("username", None)
 	password = request.json.get("password", None)
 	if ldap_auth(username, password) is False:
@@ -33,12 +36,11 @@ def book_list():
 # register books
 @api.route('/books', methods=['POST'])
 @jwt_required()
-@limiter.limit("1/second")
 def register_books():
 	if request is None:
 		return jsonify({"status": "ng", "msg": "Please post data"})
 
-	if request.headers['Content-Type'] != 'application/json':
+	if request.headers.get('Content-Type') != 'application/json':
 		return jsonify({"status": "ng", "msg": "Content-Type is invalid. Please set application/json"})
 	
 	try:
