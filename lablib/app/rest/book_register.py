@@ -60,11 +60,17 @@ TRANSLATE_LIST = {
 def search_external_api(books):
 	notFoundList = []
 	for books_req in books:
+
+		barcode = books_req.get("barcode")
+		if barcode is None:
+			notFoundList.append({"msg":"Please pass barcodes"})
+			continue
+
 		try:
-			barcode = books_req.get("barcode")
-			if barcode is None:
-				notFoundList.append({"msg":"Please pass barcodes"})
-				continue
+			wait_time = current_app.config.get("LAST_API_CALL") + 1 - time.time()
+			if wait_time > 0:
+				print("wait! {}".format(wait_time))
+				time.sleep(wait_time)
 			
 			if len(Book.query.filter_by(barcode=barcode).all()) != 0:
 				notFoundList.append({"barcode":barcode, "msg":"this book is already registered"})
@@ -81,6 +87,7 @@ def search_external_api(books):
 						"format":"json",
 						"keyword":str(barcode)}
 				res = requests.get(RAKUTEN_ICHIBA, data)
+				current_app.config["LAST_API_CALL"] = time.time()
 				if res.status_code != 200:
 					raise ConnectionRefusedError
 		
@@ -154,10 +161,8 @@ def search_external_api(books):
 		finally:
 			db.session.rollback()
 			db.session.close()
-  
-		time.sleep(1)
 	
 	if len(notFoundList) == 0:
 		return jsonify({"status":"ok"})
 	else:
-		return jsonify({"status":"partial ng", "nglist":notFoundList})
+		return jsonify({"status":"partial ng", "ngList":notFoundList})
