@@ -35,11 +35,33 @@ class TestConf:
  
 	RAKUTEN_APPLICATION_ID = os.environ.get("RAKUTEN_APPLICATION_ID")
 
+class DevelopmentConfig():
+	DEBUG = True
+	#SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
+	SQLALCHEMY_DATABASE_URI = "mysql+pymysql://user:password@192.168.100.10/test?charset=utf8mb4"
+	JSON_SORT_KEYS = False
+	JSON_AS_ASCII = False
+	
+	# Flask JWT
+	JWT_SECRET_KEY = 'Seegh5Ood0OhhuoJoo8iaxai-Ch*erie'
+	JWT_ALGORITHM = 'HS256'		# Sigunature Algorithm
+	JWT_LEEWAY = 0
+	JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=30)
+	JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
+	JWT_TOKEN_LOCATION = ['headers', 'json']
+ 
+	# LDAP
+	BASE_DOMAIN = 'cn=Users,dc=dc1,dc=localdomain'
+	LDAP_SERVER = '192.168.100.2'
+ 
+	RAKUTEN_APPLICATION_ID = '1052907836809430340'
+	LDAP_ADMIN_PASSWD = 'Ix4LeNg1Ee'
 
 @pytest.fixture(scope='session')
 def client():
 	app.config['TESTING'] = True
 	app.config.from_object(TestConf)
+	#app.config.from_object(DevelopmentConfig)
 	logger.info(app.config.get("BASE_DOMAIN"))
 	
 	with app.test_client() as client:
