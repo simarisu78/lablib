@@ -17,7 +17,7 @@ class TestCheckout:
 		###
 
 		# checkout a book
-		data = {"username":self.TestUser, "barcode":BARCODES[0]}
+		data = {"student_id":self.TestUser, "barcode":BARCODES[0]}
 		res = client.post("/api/v1/checkout", json=data)
 		assert res.status_code == 200
 		assert res.json.get("status") == "ok"
@@ -27,34 +27,34 @@ class TestCheckout:
 		###
 
 		# specify a book that does'nt exist
-		data = {"username":self.TestUser, "barcode":"1234567890123"}
+		data = {"student_id":self.TestUser, "barcode":"1234567890123"}
 		res = client.post("/api/v1/checkout", json=data)
 		assert res.status_code == 200
 		assert res.json.get("status") == "ng"
 		assert res.json.get("msg") == "this book does not exist"
 
-		# username is not specified
+		# student_id is not specified
 		data = {"barcode":BARCODES[0]}
 		res = client.post("/api/v1/checkout", json=data)
 		assert res.status_code == 200
 		assert res.json.get("status") == "ng"
-		assert res.json.get("msg") == "please post username and barcode in json format"
+		assert res.json.get("msg") == "please post student_id and barcode in json format"
 
-		# username is not specified
-		data = {"username":self.TestUser}
+		# student_id is not specified
+		data = {"student_id":self.TestUser}
 		res = client.post("/api/v1/checkout", json=data)
 		assert res.status_code == 200
 		assert res.json.get("status") == "ng"
-		assert res.json.get("msg") == "please post username and barcode in json format"
+		assert res.json.get("msg") == "please post student_id and barcode in json format"
 
 		# if neither element is specified
 		res = client.post("/api/v1/checkout", json={})
 		assert res.status_code == 200
 		assert res.json.get("status") == "ng"
-		assert res.json.get("msg") == "please post username and barcode in json format"
+		assert res.json.get("msg") == "please post student_id and barcode in json format"
 
 		# invalid content-type
-		data = {"username":self.TestUser, "barcode":BARCODES[0]}
+		data = {"student_id":self.TestUser, "barcode":BARCODES[0]}
 		res = client.post("/api/v1/checkout", json=data)
 		assert res.status_code == 200
 		assert res.json.get("status") == "ng"
