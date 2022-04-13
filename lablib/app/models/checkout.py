@@ -4,9 +4,6 @@ import datetime
 
 class Checkout(db.Model):
 	__tablename__ = 'checkout'
-	__table_args__ = (
-		db.UniqueConstraint('book_id', 'user_id', name='unique_checkout_per_user'),
-	)
 
 	checkout_id = db.Column(db.Integer(), primary_key=True, autoincrement=True)
 	book_id = db.Column(db.Integer(), db.ForeignKey('books.book_id'))
