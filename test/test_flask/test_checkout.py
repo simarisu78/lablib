@@ -33,6 +33,13 @@ class TestCheckout:
 		assert res.json.get("status") == "ng"
 		assert res.json.get("msg") == "this book does not exist"
 
+		# specify a book that does'nt exist
+		data = {"student_id":"invalid1", "barcode":BARCODES[0]}
+		res = client.post("/api/v1/checkout", json=data)
+		assert res.status_code == 200
+		assert res.json.get("status") == "ng"
+		assert res.json.get("msg") == "this user does not exist"
+
 		# student_id is not specified
 		data = {"barcode":BARCODES[0]}
 		res = client.post("/api/v1/checkout", json=data)
