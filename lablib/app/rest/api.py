@@ -81,21 +81,31 @@ def borrow_books():
 		return make_ng_res("please post student_id and barcode in json format")
 	
 	try:
-		user_id = Users.query.filter_by(student_id=student_id).first()
-		book_id = Book.query.filter_by(barcode=barcode).first()
+		user = Users.query.filter_by(student_id=student_id).first()
+		book = Book.query.filter_by(barcode=barcode).first()
 
-		if user_id is None:
+		if user is None:
 			return make_ng_res("this user is unregistered")
-		if book_id is None:
+		if book is None:
 			return make_ng_res("this book does not exist")
 
+		if book.stock == 0:
+			return make_ng_res("this book is already checked out")
+
+		user_id = user.user_id
+		book_id = book.book_id
 		checkout = Checkout(user_id=user_id, book_id=book_id)
+		book.stock = book.stock - 1
 
 		db.session.add(checkout)
+		db.session.add(book)
 		db.session.commit()
 
+		logger.info("{book} has been checked out. remaining stock is {stock}", book.title, book.stock)
 		return make_ok_res()
-	except:
+		
+	except Exception as e:
+		logger.error(e)
 		db.session.rollback()
 		db.session.close()
 
