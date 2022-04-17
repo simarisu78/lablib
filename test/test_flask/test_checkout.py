@@ -47,12 +47,19 @@ class TestCheckout:
 		assert res.json.get("status") == "ng"
 		assert res.json.get("msg") == "please post student_id and barcode in json format"
 
-		# student_id is not specified
+		# barcode is not specified
 		data = {"student_id":self.TestUser}
 		res = client.post("/api/v1/checkout", json=data)
 		assert res.status_code == 200
 		assert res.json.get("status") == "ng"
 		assert res.json.get("msg") == "please post student_id and barcode in json format"
+
+		# out of stock
+		data = {"student_id":self.TestUser, "barcode":BARCODES[0]}
+		res = client.post("/api/v1/checkout", json=data)
+		assert res.status_code == 200
+		assert res.json.get("status") == "ng"
+		assert res.json.get("msg") == "this book is already checked out"
 
 		# if neither element is specified
 		res = client.post("/api/v1/checkout", json={})
