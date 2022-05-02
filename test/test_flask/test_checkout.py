@@ -8,10 +8,23 @@ logger = getLogger(__name__)
 from .test_books import BARCODES
 
 class TestCheckout:
-	TestUser = os.environ.get("TEST_USER_NAME")
+	TestUser = os.environ.get("TEST_STUDENT_ID")
 
 	@pytest.mark.ssnlib
 	def test_checkout(self, client):
+		###
+		# Prepare testing
+		###
+		# get JWT token
+		auth_res = client.post("/api/v1/auth", data=json.dumps(dict(username="Administrator", password=os.environ.get("LDAP_ADMIN_PASSWD"))), headers={"content-type":"application/json"})
+		JWT = auth_res.json.get("access_token")
+
+		# register user
+		data = {"ldap_user_name":"Administrator", "student_id":self.TestUser}
+		res = client.post("/api/v1/users", headers={"Authorization":"Bearer {}".format(JWT)}, json=data)
+		assert res.status_code == 200
+		assert res.json.get("status") == "ok"
+
 		###
 		# Normal behavior
 		###
@@ -69,7 +82,6 @@ class TestCheckout:
 
 		# invalid content-type
 		data = {"student_id":self.TestUser, "barcode":BARCODES[0]}
-		res = client.post("/api/v1/checkout", json=data)
+		res = client.post("/api/v1/checkout", data=json.dumps(data))
 		assert res.status_code == 200
-		assert res.json.get("status") == "ng"
 		assert res.json.get("msg") == "Content-Type is invalid. Please set application/json"
