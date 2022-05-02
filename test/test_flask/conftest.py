@@ -35,7 +35,7 @@ class TestConf:
  
 	RAKUTEN_APPLICATION_ID = os.environ.get("RAKUTEN_APPLICATION_ID")
 
-from lablib.app.config import DevelopmentConfig
+#from lablib.app.config import DevelopmentConfig
 @pytest.fixture(scope='session')
 def client():
 	app.config['TESTING'] = True
