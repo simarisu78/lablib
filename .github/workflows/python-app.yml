@@ -20,6 +20,7 @@ env:
   # this passwd is only for github actions
   # DO NOT USE PRODUCTION ENVIRONMENT
   LDAP_ADMIN_PASSWD: eit(u5wai5ahgho8iV}oo)S2la"o9Eis
+  TEST_STUDENT_ID: abc12345
 
 jobs:
   build:
