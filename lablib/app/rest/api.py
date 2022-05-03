@@ -1,4 +1,5 @@
 from functools import wraps
+from tabnanny import check
 from flask import Blueprint, make_response, request, abort, jsonify, current_app
 from flask_jwt_extended import jwt_required, create_access_token
 import jwt
@@ -114,7 +115,36 @@ def borrow_books():
 @api.route('/checkout', methods=['DELETE'])
 @content_type("application/json")
 def return_books():
-	return "return books"
+	barcode = request.json.get("barcode")
+
+	# barcode does not exist
+	if barcode is None:
+		return make_ng_res("please specify barcode in json format")
+
+	# please 
+	try:
+		checkouts = Checkout.query.filter(Checkout.book.has(barcode=barcode))
+		checkouts = checkouts.filter_by(isReturn=False)
+
+		if checkouts.count() == 0:
+			if Book.query.filter_by(barcode=barcode).count() != 0:
+				return make_ng_res("this book is not checked out")
+			else:
+				return make_ng_res("this book does not exist")
+		
+		# Update database
+		# TODO: Add processes when multiple books are hit
+		checkout = checkouts[0]
+		checkout.isReturn = True
+		db.session.add(checkout)
+		db.session.commit()
+		return make_ok_res()
+
+	except Exception as e:
+		logger.error(e)
+		db.session.rollback()
+		db.session.close()
+		return make_ng_res("some error has occured")
 
 # register user
 @api.route('/users', methods=['POST'])
@@ -123,7 +153,6 @@ def return_books():
 def add_user():
 	ldap_user_name = request.json.get("ldap_user_name")
 	student_id = request.json.get("student_id")
-	logger.info("im here")
 
 	if ldap_user_name is None or student_id is None:
 		return make_ng_res("please post ldap_user_name and student_id")
