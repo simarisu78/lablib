@@ -18,6 +18,7 @@ class TestReturn:
 		###
 		data = {"barcode":BARCODES[0]}
 		res = client.delete("/api/v1/checkout", json=data)
+		logger.debug(res.json)
 		assert res.status_code == 200
 		assert res.json.get("status") == "ok"
 
@@ -28,6 +29,7 @@ class TestReturn:
 		# barcode was not specified
 		data = {}
 		res = client.delete("/api/v1/checkout", json=data)
+		logger.debug(res.json)
 		assert res.status_code == 200
 		assert res.json.get("status") == "ng"
 		assert res.json.get("msg") == "please specify barcode in json format"
@@ -35,6 +37,7 @@ class TestReturn:
 		# If the book was not checked out
 		data = {"barcode":BARCODES[0]}
 		res = client.delete("/api/v1/checkout", json=data)
+		logger.debug(res.json)
 		assert res.status_code == 200
 		assert res.json.get("status") == "ng"
 		assert res.json.get("msg") == "this book is not checked out"
@@ -42,6 +45,7 @@ class TestReturn:
 		# If the book does not exist
 		data = {"barcode":"1234567890123"}
 		res = client.delete("/api/v1/checkout", json=data)
+		logger.debug(res.json)
 		assert res.status_code == 200
 		assert res.json.get("status") == "ng"
 		assert res.json.get("msg") == "this book does not exist"
@@ -49,5 +53,6 @@ class TestReturn:
 		# invalid content-type
 		data = {"barcode":BARCODES[0]}
 		res = client.delete("/api/v1/checkout", data=json.dumps(data))
+		logger.debug(res.json)
 		assert res.status_code == 200
 		assert res.json.get("msg") == "Content-Type is invalid. Please set application/json"
