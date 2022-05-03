@@ -1,11 +1,8 @@
-from ast import keyword
-from asyncio.log import logger
-from crypt import methods
 from flask import render_template, send_from_directory, request
 from flask_paginate import Pagination, get_page_parameter
 from markupsafe import escape
 
-from lablib.app import app
+from lablib.app import app, csrf
 from lablib.app.models import Book
 
 @app.route('/', methods=['get', 'post'])

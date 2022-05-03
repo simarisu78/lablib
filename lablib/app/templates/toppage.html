@@ -15,6 +15,7 @@
 <div class="container">
     <form method="post" action="/">
         <div class="mb-1">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <label for="keyword" class="form-label">Keyword</label>
             <input type="text" class="form-control" name="keyword">
             <input class="btn2" type="submit" value="Search">
