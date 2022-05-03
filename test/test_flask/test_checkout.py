@@ -1,5 +1,5 @@
 import os
-from itsdangerous import json
+import json
 import pytest
 from logging import getLogger
 logger = getLogger(__name__)
