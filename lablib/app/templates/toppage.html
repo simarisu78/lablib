@@ -13,6 +13,13 @@
 
 </div>
 <div class="container">
+    <form method="post" action="/">
+        <div class="mb-1">
+            <label for="keyword" class="form-label">Keyword</label>
+            <input type="text" class="form-control" name="keyword">
+            <input class="btn2" type="submit" value="Search">
+        </div>
+    </form>
     {% if pagination %}
         {{ pagination.info }}
         <table class="table table-striped">
