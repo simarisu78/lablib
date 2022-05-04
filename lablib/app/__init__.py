@@ -4,4 +4,5 @@ from .util.db import init_db
 from .portal import views
 
 app.register_blueprint(api)
+csrf.exempt(api)
 init_db(app)
