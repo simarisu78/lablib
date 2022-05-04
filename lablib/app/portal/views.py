@@ -46,6 +46,12 @@ def login():
 def load_user(username):
 	return User(username)
 
+@app.route("/logout")
+@login_required
+def logout():
+	logout_user()
+	return redirect('/')
+
 @app.route('/users/<username>')
 def profile(username):
 	return '{}\'s profile'.format(escape(username))
