@@ -8,7 +8,7 @@ from wtforms.validators import DataRequired
 from markupsafe import escape
 
 from lablib.app import app, csrf, login_manager
-from lablib.app.models import Book, Users
+from lablib.app.models import Book, Users, Checkout
 from lablib.app.util.auth import ldap_auth
 
 @app.route('/', methods=['get', 'post'])
@@ -52,9 +52,17 @@ def logout():
 	logout_user()
 	return redirect('/')
 
-@app.route('/users/<username>')
-def profile(username):
-	return '{}\'s profile'.format(escape(username))
+@app.route('/userpage')
+@login_required
+def profile():
+	usr = Users.query.filter_by(ldap_user_name=current_user.username).first()
+	history = Checkout.query.filter_by(user_id=usr.user_id, isReturn=True).all()
+	now = Checkout.query.filter_by(user_id=usr.user_id, isReturn=False).all()
+
+	page = request.args.get(get_page_parameter(), type=int, default=1)
+	rows = history[(page-1)*30 : page*30]
+	pagination = Pagination(page=page, total=len(history), per_page=30, css_framework='bootstrap5')
+	return render_template('user_page.html', pagination=pagination, history=rows, now=now, current_user=current_user)
 
 
 @app.route('/favicon.ico')
