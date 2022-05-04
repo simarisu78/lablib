@@ -35,7 +35,7 @@
 	    <li>
 	  </ul>
 	  <ul class="navbar-nav">
-	    {% if current_user %}
+	    {% if current_user.username %}
 	    <li class="nav-item">
 	      <a class="nav-link" href="/users/{{ current_user.username }}">{{ current_user.username }}</a>
 	    </li>

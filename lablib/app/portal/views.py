@@ -1,7 +1,7 @@
 from crypt import methods
-from flask import render_template, send_from_directory, request, redirect
+from flask import render_template, send_from_directory, request, redirect, session
 from flask_paginate import Pagination, get_page_parameter
-from flask_login import login_required, login_user
+from flask_login import login_required, login_user, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
@@ -22,7 +22,7 @@ def index():
 	page = request.args.get(get_page_parameter(), type=int, default=1)
 	rows = books[(page-1)*30 : page*30]
 	pagination = Pagination(page=page, total=len(books), per_page=30, css_framework='bootstrap5')
-	return render_template('toppage.html', pagination=pagination, rows=rows)
+	return render_template('toppage.html', pagination=pagination, rows=rows, current_user=current_user)
 
 @app.route('/login', methods=['get', 'post'])
 def login():
@@ -43,7 +43,6 @@ def login():
 	return render_template('login_form.html')
 
 @login_manager.user_loader
-@login_required
 def load_user(username):
 	return User(username)
 
