@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <form action="/login" method="post">
+        <!-- username input -->
+        <div class="form-outline mb-4">
+        <input type="text" name="username" class="form-control" />
+        <label class="form-label" for="username">Username</label>
+        </div>
+    
+        <!-- Password input -->
+        <div class="form-outline mb-4">
+        <input type="password" name="passwd" class="form-control" />
+        <label class="form-label" for="passwd">Password</label>
+        </div>
+        
+        <!-- CSRF Token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+        <!-- Submit button -->
+        <input type="submit" class="btn btn-primary btn-block mb-4" value="Login">
+    </form>
+</div>
+{% endblock %}
