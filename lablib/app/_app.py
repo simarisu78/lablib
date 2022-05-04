@@ -7,8 +7,8 @@ from flask_wtf.csrf import CSRFProtect
 from flask_login import LoginManager
 
 app = Flask(__name__, static_folder='static')
-if os.path.exists("/".join([ os.path.dirname(__file__), "config.py" ])):
-	app.config.from_object('lablib.app.config.Config')
+if os.path.exists("/".join([os.path.dirname(__file__), "config.py"])):
+    app.config.from_object('lablib.app.config.Config')
 
 jwt = JWTManager(app)
 limiter = Limiter(app, key_func=get_remote_address)
