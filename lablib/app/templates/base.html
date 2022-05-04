@@ -16,7 +16,7 @@
   
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
       <div class="container-fluid">
-	<a href="" class="navbar-brand"> LabLib</a>
+	<a href="/" class="navbar-brand"> LabLib</a>
       <button class="pull-left navbar-toggler" type="button"
 	      data-toggle="collapse"
 	      data-target="#navmenu1"
@@ -28,19 +28,19 @@
       <div class="collapse navbar-collapse" id="navmenu1">
 	  <ul class="navbar-nav mr-auto">
 	    <li class="nav-item">
-              <a class="nav-link" href="#">Home</a>
+              <a class="nav-link" href="/">Home</a>
 	    </li>
 	    <li class="nav-item">
 	      <a class="nav-link" href="#">BookList</a>
 	    <li>
 	  </ul>
 	  <ul class="navbar-nav">
-	    {% if username %}
+	    {% if current_user %}
 	    <li class="nav-item">
-	      <a class="nav-link" href="#">{{username}}</a>
+	      <a class="nav-link" href="/users/{{ current_user.username }}">{{ current_user.username }}</a>
 	    </li>
 	    <li class="nav-item">
-              <a class="nav-link" href="#">Logout</a>
+              <a class="nav-link" href="/logout">Logout</a>
             </li>
 	    {% else %}
 	    <li class="nav-item">
