@@ -37,7 +37,7 @@ keymap = {
 class BarcodeReader(threading.Thread):
 
     _path = None
-    
+
     def __init__(self, queue):
         super(BarcodeReader, self).__init__(daemon=True)
         self._device = self.find_device()
@@ -45,7 +45,7 @@ class BarcodeReader(threading.Thread):
 
     def find_device(self):
         devices = [evdev.InputDevice(PATH) for path in evdev.list_devices()]
-        
+
         if PATH is not None:
             logger.debug("use defined path : %s" % PATH)
             return evdev.InputDevice(PATH)
@@ -68,6 +68,7 @@ class BarcodeReader(threading.Thread):
                         barcode = ""
                     elif keymap.get(event.code) is not None:
                         barcode += keymap.get(event.code)
+
 
 if __name__ == "__main__":
     PATH = "/dev/input/event0"

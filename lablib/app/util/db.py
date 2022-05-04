@@ -10,6 +10,7 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 """
 
+
 def init_db(app):
     db.init_app(app)
     with app.app_context():
