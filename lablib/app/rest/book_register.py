@@ -28,7 +28,10 @@ def self_register(books):
 
             barcode_pat = re.compile("\d+")
             publishmonth_pat = re.compile("\d{4}-\d{2}")
-            if not barcode_pat.fullmatch(barcode) or not publishmonth_pat.fullmatch(publishmonth):
+            if not barcode_pat.fullmatch(barcode):
+                raise ValueError
+
+            if publishmonth is not None and not publishmonth_pat.fullmatch(publishmonth):
                 raise ValueError
 
             book = Book(barcode=barcode, title=title, author=author,
@@ -38,9 +41,9 @@ def self_register(books):
 
         db.session.commit()
     except ValueError:
-        return ngList.append({"status": "ng", "msg": "The format is invalid. Please check barcode and publishmonth."})
-    except:
-        return ngList.append({"status": "ng", "msg": "Some error occured. Please check your book data. barcode, title, author, publishmonth are required."})
+        ngList.append({"status": "ng", "msg": "The format is invalid. Please check barcode and publishmonth."})
+    except Exception as e:
+        ngList.append({"status": "ng", "msg": "Some error occured. Please check your book data. barcode, title, author are required."})
 
     if len(ngList) == 0:
         return jsonify({"status": "ok"})

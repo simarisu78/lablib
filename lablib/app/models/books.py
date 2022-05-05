@@ -13,7 +13,7 @@ class Book(db.Model):
     author = db.Column(db.String(255), nullable=False)
     detail = db.Column(db.Text())
     # YYYY-MM
-    publishmonth = db.Column(db.String(7), nullable=False)
+    publishmonth = db.Column(db.String(7))
     publisher = db.Column(db.String(255))
     # 蔵書数
     amount = db.Column(db.Integer, nullable=False)
