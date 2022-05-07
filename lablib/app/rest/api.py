@@ -150,6 +150,7 @@ def return_books():
         # TODO: Add processes when multiple books are hit
         checkout = checkouts[0]
         checkout.isReturn = True
+        checkout.book.stock += 1
         db.session.add(checkout)
         db.session.commit()
         return make_ok_res()
