@@ -4,6 +4,7 @@ from queue import Queue
 import threading
 import hashlib
 import requests
+import time
 
 
 from barcode import BarcodeReader
@@ -90,7 +91,50 @@ def checkout(studentID):
 
 
 def return_book(barcode):
-    pass
+    title = "返却"
+    message = "バーコードを読み取ってください"
+
+    layout = [
+        [sg.Text(title, font=("メイリオ", 22), text_color="Black")],
+        [sg.Text(message, font=("メイリオ", 22), key="-message-")],
+        [sg.Text("", font=("メイリオ",22), key="-notice-")],
+        [sg.Button("Cancel", key="-cancel_button-")],
+    ]
+
+    return_window = sg.Window('Library System', layout, size=(
+        x, y), element_justification="c").Finalize()
+    return_window.Maximize()
+    
+    if barcode is not None:
+        return_window.write_event_value('-BARCODE-', ('barcode', barcode))
+
+    while True:
+        # if no event is wrote in 5000ms, sg.timeout is written.
+        window, event, values = sg.read_all_windows(timeout=5000, timeout_key="-timeout-")
+        print(event)
+        if event in [sg.WIN_CLOSED, '-exit-', 'Escape:27', "-cancel_button-", "-timeout-"]:
+            break
+
+        if event in ["-BARCODE-"]:
+            barcode = values["-BARCODE-"][1]
+            data = {"barcode":barcode}
+            res = requests.delete(CHECKOUT_URL, json=data)
+            print(res.json())
+            if res.status_code == 200 and res.json().get("status") == "ok":
+                return_window["-notice-"].Update("返却が完了しました")
+            else:
+                if res.status_code != 200:
+                    return_window["-notice-"].Update("エラーです。管理者に報告してください")
+
+                err_msg = res.json().get("msg")
+                if err_msg == "this book does not exist":
+                    return_window["-notice-"].Update("この書籍は登録されていません")
+                elif err_msg == "this book is not checked out":
+                    return_window["-notice-"].Update("この書籍は貸し出されていません")
+                else:
+                    return_window["-notice-"].Update("何かしらのエラーが発生しました")
+
+    return_window.close()
 
 
 def login():
@@ -252,6 +296,11 @@ def main():
         elif event == "-FELICA_CON-":
             studentID = values["-FELICA_CON-"][2]
             checkout(studentID)
+        elif event == "-RETURN-":
+            return_book(None)
+        elif event == "-BARCODE-":
+            barcode = values["-BARCODE-"][1]
+            return_book(barcode)
 
         print(event)
 
