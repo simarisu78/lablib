@@ -118,8 +118,12 @@ def return_book(barcode):
         if event in ["-BARCODE-"]:
             barcode = values["-BARCODE-"][1]
             data = {"barcode":barcode}
-            res = requests.delete(CHECKOUT_URL, json=data)
-            print(res.json())
+            try:
+                res = requests.delete(CHECKOUT_URL, json=data)
+            except:
+                return_window["-notice-"].Update("接続エラーです")
+                continue
+            
             if res.status_code == 200 and res.json().get("status") == "ok":
                 return_window["-notice-"].Update("返却が完了しました")
             else:
@@ -301,8 +305,6 @@ def main():
         elif event == "-BARCODE-":
             barcode = values["-BARCODE-"][1]
             return_book(barcode)
-
-        print(event)
 
     window.close()
 
