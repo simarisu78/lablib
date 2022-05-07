@@ -3,6 +3,7 @@ lablib.egg-info
 .eggs
 .coverage
 lablib/app/config.py
+lablib/client/client_conf.py
 env/*
 test/test_flask/conftest.py
 .secrets

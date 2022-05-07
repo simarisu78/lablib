@@ -64,7 +64,7 @@ class BarcodeReader(threading.Thread):
             for event in self._device.read_loop():
                 if event.type == evdev.ecodes.EV_KEY and event.value == 1:
                     if event.code in (28, 96):
-                        self._queue.put(barcode)
+                        self._queue.put(("barcode", barcode))
                         barcode = ""
                     elif keymap.get(event.code) is not None:
                         barcode += keymap.get(event.code)

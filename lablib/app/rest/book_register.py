@@ -28,7 +28,14 @@ def self_register(books):
 
             barcode_pat = re.compile("\d+")
             publishmonth_pat = re.compile("\d{4}-\d{2}")
-            if not barcode_pat.fullmatch(barcode) or not publishmonth_pat.fullmatch(publishmonth):
+
+            if len(title) == 0 or len(author) == 0:
+                raise ValueError
+
+            if not barcode_pat.fullmatch(barcode):
+                raise ValueError
+
+            if publishmonth is not None and not publishmonth_pat.fullmatch(publishmonth):
                 raise ValueError
 
             book = Book(barcode=barcode, title=title, author=author,
@@ -38,9 +45,9 @@ def self_register(books):
 
         db.session.commit()
     except ValueError:
-        return ngList.append({"status": "ng", "msg": "The format is invalid. Please check barcode and publishmonth."})
-    except:
-        return ngList.append({"status": "ng", "msg": "Some error occured. Please check your book data. barcode, title, author, publishmonth are required."})
+        ngList.append({"status": "ng", "msg": "The format is invalid. Please check barcode and publishmonth."})
+    except Exception as e:
+        ngList.append({"status": "ng", "msg": "Some error occured. Please check your book data. barcode, title, author are required."})
 
     if len(ngList) == 0:
         return jsonify({"status": "ok"})
@@ -72,8 +79,7 @@ def search_external_api(books):
             continue
 
         try:
-            wait_time = current_app.config.get(
-                "LAST_API_CALL") + 1 - time.time()
+            wait_time = current_app.config.get("LAST_API_CALL") + 1 - time.time()
             if wait_time > 0:
                 print("wait! {}".format(wait_time))
                 time.sleep(wait_time)
@@ -109,8 +115,7 @@ def search_external_api(books):
                     if reg is not None:
                         year_month = "{}年{:0>2}月号".format(
                             reg.groups()[0], reg.groups()[1])
-                        publish_month = "-".join([reg.groups()
-                                                 [0], "{:0>2}".format(reg.groups()[1])])
+                        publish_month = "-".join([reg.groups()[0], "{:0>2}".format(reg.groups()[1])])
                         break
 
                 magazine_code = barcode[4:9]
@@ -141,8 +146,7 @@ def search_external_api(books):
 
                 newbook.title = result.get("summary").get("title")
                 newbook.author = result.get("summary").get("author")
-                newbook.detail = result.get("onix").get("CollateralDetail", {}).get(
-                    "TextContent", {})[0].get("Text", None)
+                newbook.detail = result.get("onix").get("CollateralDetail", {}).get("TextContent", {})[0].get("Text", None)
 
                 pubdate = result.get("summary").get("pubdate")
                 if '-' in pubdate:
