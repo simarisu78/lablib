@@ -51,7 +51,7 @@ def checkout(studentID):
         checkout_window["-notice-"].Update(studentID)
 
     while True:
-        event, values = checkout_window.read()
+        window, event, values = sg.read_all_windows()
 
         if event in [sg.WIN_CLOSED, '-exit-', 'Escape:27', "-cancel_button-", "-FELICA_REL-"]:
             break
@@ -61,14 +61,14 @@ def checkout(studentID):
                 barcode = values["-BARCODE-"][1]
                 data = {"student_id":studentID, "barcode":barcode}
                 res = requests.post(CHECKOUT_URL, json=data)
-                if res.status_code == 200 and res.json.get("status") == "ok":
+                if res.status_code == 200 and res.json().get("status") == "ok":
                     checkout_window["-notice-"].Update("貸出完了：{}".format(barcode))
                     continue
                 else:
                     if res.status_code != 200:
                         checkout_window["-notice-"].Update("エラーです。管理者に報告してください")
 
-                    err_msg = res.json.get("msg")
+                    err_msg = res.json().get("msg")
                     if err_msg == "this book does not exist":
                         checkout_window["-notice-"].Update("この書籍は登録されていません")
                     elif err_msg == "this user does not exist":
