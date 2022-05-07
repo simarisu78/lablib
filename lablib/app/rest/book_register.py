@@ -28,6 +28,10 @@ def self_register(books):
 
             barcode_pat = re.compile("\d+")
             publishmonth_pat = re.compile("\d{4}-\d{2}")
+
+            if len(title) == 0 or len(author) == 0:
+                raise ValueError
+
             if not barcode_pat.fullmatch(barcode):
                 raise ValueError
 
@@ -75,8 +79,7 @@ def search_external_api(books):
             continue
 
         try:
-            wait_time = current_app.config.get(
-                "LAST_API_CALL") + 1 - time.time()
+            wait_time = current_app.config.get("LAST_API_CALL") + 1 - time.time()
             if wait_time > 0:
                 print("wait! {}".format(wait_time))
                 time.sleep(wait_time)
@@ -112,8 +115,7 @@ def search_external_api(books):
                     if reg is not None:
                         year_month = "{}年{:0>2}月号".format(
                             reg.groups()[0], reg.groups()[1])
-                        publish_month = "-".join([reg.groups()
-                                                 [0], "{:0>2}".format(reg.groups()[1])])
+                        publish_month = "-".join([reg.groups()[0], "{:0>2}".format(reg.groups()[1])])
                         break
 
                 magazine_code = barcode[4:9]
@@ -144,8 +146,7 @@ def search_external_api(books):
 
                 newbook.title = result.get("summary").get("title")
                 newbook.author = result.get("summary").get("author")
-                newbook.detail = result.get("onix").get("CollateralDetail", {}).get(
-                    "TextContent", {})[0].get("Text", None)
+                newbook.detail = result.get("onix").get("CollateralDetail", {}).get("TextContent", {})[0].get("Text", None)
 
                 pubdate = result.get("summary").get("pubdate")
                 if '-' in pubdate:
