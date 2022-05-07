@@ -11,6 +11,7 @@ from felica import FelicaReader
 from client_conf import CLIENT_CONF
 
 REGISTER_URL = CLIENT_CONF.REGISTER_URL
+CHECKOUT_URL = CLIENT_CONF.CHECKOUT_URL
 TOKEN = CLIENT_CONF.TOKEN
 
 logger = getLogger(__name__)
@@ -30,8 +31,62 @@ def worker(queue, window):
             window.write_event_value("-FELICA_REL-", event)
 
 
-def rent(studentID):
-    pass
+def checkout(studentID):
+    title = "貸出"
+    message = "学生証を置いてください"
+
+    layout = [
+        [sg.Text(title, font=("メイリオ", 22), text_color="Black")],
+        [sg.Text(message, font=("メイリオ", 22), key="-message-")],
+        [sg.Text("", font=("メイリオ",22), key="-notice-")],
+        [sg.Button("Cancel", key="-cancel_button-")],
+    ]
+
+    checkout_window = sg.Window('Library System', layout, size=(
+        x, y), element_justification="c").Finalize()
+    checkout_window.Maximize()
+
+    if studentID is not None:
+        checkout_window['-message-'].Update("")
+        checkout_window["-notice-"].Update(studentID)
+
+    while True:
+        event, values = checkout_window.read()
+
+        if event in [sg.WIN_CLOSED, '-exit-', 'Escape:27', "-cancel_button-", "-FELICA_REL-"]:
+            break
+
+        if event in ["-BARCODE-"]:
+            if studentID is not None:
+                barcode = values["-BARCODE-"][1]
+                data = {"student_id":studentID, "barcode":barcode}
+                res = requests.post(CHECKOUT_URL, json=data)
+                if res.status_code == 200 and res.json.get("status") == "ok":
+                    checkout_window["-notice-"].Update("貸出完了：{}".format(barcode))
+                    continue
+                else:
+                    if res.status_code != 200:
+                        checkout_window["-notice-"].Update("エラーです。管理者に報告してください")
+
+                    err_msg = res.json.get("msg")
+                    if err_msg == "this book does not exist":
+                        checkout_window["-notice-"].Update("この書籍は登録されていません")
+                    elif err_msg == "this user does not exist":
+                        checkout_window["-notice-"].Update("この学籍番号は登録されていません")
+                    elif err_msg == "this book is already checked out":
+                        checkout_window["-notice-"].Update("既に貸し出されている書籍です")
+                    else:
+                        checkout_window["-notice-"].Update("何かしらのエラーが発生しました")
+
+            else:
+                checkout_window["-notice-"].Update("先に学生証を置いてください")
+
+        if event in ["-FELICA_CON-"]:
+            studentID = values['-FELICA_CON-'][2]
+            checkout_window["-message-"].Update("借りたい本のバーコードを読み込んでください")
+            checkout_window["-notice-"].Update(studentID)
+
+    checkout_window.close()
 
 
 def return_book(barcode):
@@ -162,7 +217,7 @@ def main():
         [sg.Text(greet_2, font=("メイリオ", 22))],
         [sg.Text(greet_3, font=("メイリオ", 22))],
         [],
-        [sg.Button("", key="-RENT-", image_filename="./static/rent.png"),
+        [sg.Button("", key="-CHECKOUT-", image_filename="./static/rent.png"),
          sg.Button("", key="-RETURN-", image_filename="./static/return.png")],
         [sg.Button("", key="-REGISTER-", image_filename="./static/register.png")],
         [sg.Button("DEBUG", key="-EXIT-")],
@@ -192,6 +247,11 @@ def main():
             break
         elif event == "-REGISTER-":
             login()
+        elif event == "-CHECKOUT-":
+            checkout(None)
+        elif event == "-FELICA_CON-":
+            studentID = values["-FELICA_CON-"][2]
+            checkout(studentID)
 
         print(event)
 
