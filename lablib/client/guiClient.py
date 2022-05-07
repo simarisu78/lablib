@@ -4,7 +4,7 @@ from queue import Queue
 import threading
 import hashlib
 import requests
-import os
+
 
 from barcode import BarcodeReader
 from felica import FelicaReader
@@ -82,13 +82,15 @@ def register():
     message = "登録したい書籍のバーコードを読み込んでください"
     message2 = "エラーが発生した場合は直接入力してください"
     layout = [
-        [sg.Text(message)],
-        [sg.Text(message2)],
-        [sg.Text("", key="-notice1-", text_color="Green")],
-        [sg.Text("", key="-notice2-", text_color="Red")],
-        [sg.Text("Barcode"), sg.Input("", key="-barcode-")],
-        [sg.Text("Title"), sg.Input("", key="-title-")],
-        [sg.Text("Author"), sg.Input("", key="-author-")],
+        [sg.Text(message, font=("メイリオ", 18))],
+        [sg.Text(message2, font=("メイリオ", 18, "overstrike"))],
+        [sg.Text("Raspberry Pi3のPySimpleGUIでは日本語入力ができません。(調査中)", text_color="Red",font=("メイリオ", 16))],
+        [sg.Text("エラーが発生した場合はWebUIから登録してください。", text_color="Red", font=("メイリオ", 16))],
+        [sg.Text("", key="-notice1-", text_color="Green", font=("メイリオ", 14))],
+        [sg.Text("", key="-notice2-", text_color="Red", font=("メイリオ", 14))],
+        [sg.Text("Barcode"), sg.Input("", key="-barcode-",disabled=True)],
+        [sg.Text("Title"), sg.Input("", key="-title-", disabled=True)],
+        [sg.Text("Author"), sg.Input("", key="-author-", disabled=True)],
         [sg.Button("Apply", key="-apply_button-"),
          sg.Button("Cancel", key="-cancel_button-")],
     ]
@@ -180,7 +182,7 @@ def main():
     fr.start()
 
     # thread for polling event queue
-    #threading.Thread(target=worker, args=(event_queue, window), daemon=True).start()
+    threading.Thread(target=worker, args=(event_queue, window), daemon=True).start()
 
     # Event Loop
     while True:
