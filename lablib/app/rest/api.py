@@ -115,36 +115,37 @@ def borrow_books():
 @api.route('/checkout', methods=['DELETE'])
 @content_type("application/json")
 def return_books():
-	barcode = request.json.get("barcode")
+    barcode = request.json.get("barcode")
 
-	# barcode does not exist
-	if barcode is None:
-		return make_ng_res("please specify barcode in json format")
+    # barcode does not exist
+    if barcode is None:
+        return make_ng_res("please specify barcode in json format")
 
-	# please 
-	try:
-		checkouts = Checkout.query.filter(Checkout.book.has(barcode=barcode))
-		checkouts = checkouts.filter_by(isReturn=False)
+    # please
+    try:
+        checkouts = Checkout.query.filter(Checkout.book.has(barcode=barcode))
+        checkouts = checkouts.filter_by(isReturn=False)
 
-		if checkouts.count() == 0:
-			if Book.query.filter_by(barcode=barcode).count() != 0:
-				return make_ng_res("this book is not checked out")
-			else:
-				return make_ng_res("this book does not exist")
-		
-		# Update database
-		# TODO: Add processes when multiple books are hit
-		checkout = checkouts[0]
-		checkout.isReturn = True
-		db.session.add(checkout)
-		db.session.commit()
-		return make_ok_res()
+        if checkouts.count() == 0:
+            if Book.query.filter_by(barcode=barcode).count() != 0:
+                return make_ng_res("this book is not checked out")
+            else:
+                return make_ng_res("this book does not exist")
 
-	except Exception as e:
-		logger.error(e)
-		db.session.rollback()
-		db.session.close()
-		return make_ng_res("some error has occured")
+        # Update database
+        # TODO: Add processes when multiple books are hit
+        checkout = checkouts[0]
+        checkout.isReturn = True
+        checkout.book.stock += 1
+        db.session.add(checkout)
+        db.session.commit()
+        return make_ok_res()
+
+    except Exception as e:
+        logger.error(e)
+        db.session.rollback()
+        db.session.close()
+        return make_ng_res("some error has occured")
 
 # register user
 @api.route('/users', methods=['POST'])
