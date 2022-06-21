@@ -66,7 +66,7 @@ def profile():
     now = Checkout.query.filter_by(user_id=usr.user_id, isReturn=False).all()
 
     page = request.args.get(get_page_parameter(), type=int, default=1)
-    rows = history[(page-1)*30: page*30]
+    rows = history[(page-1)*30: page*30][::-1]
     pagination = Pagination(page=page, total=len(
         history), per_page=30, css_framework='bootstrap5')
     return render_template('user_page.html', pagination=pagination, history=rows, now=now, current_user=current_user)

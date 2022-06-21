@@ -44,15 +44,16 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th scope="col">#</th>
+                    <th scope="col">時間</th>
                     <th scope="col">タイトル</th>
                     <th scope="col">著者</th>
                     <th scope="col">ISBN or JAN</th>
                 </tr>
             </thead>
             <tbody>
-                {% for checkout in now %}
+                {% for checkout in history %}
                     <tr scope="row">
+                        <td>{{ checkout.checkoutDate }}</td>
                         <td>{{ checkout.book.title }}</td>
                         <td>{{ checkout.book.author }}</td>
                         <td>{{ checkout.book.barcode }}</td>
