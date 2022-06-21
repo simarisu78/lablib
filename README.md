@@ -3,7 +3,7 @@
 # lablib
 This is a tool for book management.
 
-## useage
+## usage
 
 ## dependencies
 
